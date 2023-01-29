@@ -13,6 +13,12 @@
       inputs.nixpkgs-stable.follows = "nixpkgs";
     };
     nix-filter.url = "github:numtide/nix-filter";
+    t4-nix = {
+      url = "github:t4ccer/t4.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+      inputs.pre-commit-hooks-nix.follows = "pre-commit-hooks-nix";
+    };
   };
 
   outputs = inputs @ {flake-parts, ...}: let
@@ -21,6 +27,7 @@
     flake-parts.lib.mkFlake {inherit inputs;} {
       imports = [
         inputs.pre-commit-hooks-nix.flakeModule
+        inputs.t4-nix.stdenvMatrix
       ];
 
       # Hack to make following work with IFD:
@@ -40,11 +47,12 @@
       }: let
         inherit (pkgs) lib;
         version = "1.0.0";
+        stdenvs = ["stdenv" "clangStdenv"];
       in {
         pre-commit.settings = {
           hooks = {
             alejandra.enable = true;
-            fourmolu.enable = true;
+            clang-format.enable = true;
           };
         };
 
@@ -54,85 +62,96 @@
             pkgs.gcc
             pkgs.binutils
             pkgs.gdb
-            pkgs.clang # for for clang-format
+            pkgs.clang-tools # for for clang-format
           ];
         };
 
         packages = {
-          fs_alloc = pkgs.stdenv.mkDerivation {
-            pname = "fs_alloc";
-            inherit version;
-            src = nix-filter {
-              root = ./.;
-              include = [
-                "fs_alloc.h"
-                "Makefile"
-              ];
-            };
-            buildPhase = ''
-              make fs_alloc.o
-            '';
-            installPhase = ''
-              mkdir -p $out/include
-              cp fs_alloc.h $out/include
-              mkdir -p $out/lib
-              cp fs_alloc.o $out/lib
-            '';
-            meta = {
-              license = lib.licenses.gpl3Plus;
+          default = self'.packages.stdenv-example;
+        };
+
+        stdenvMatrix = {
+          fs_alloc = {
+            inherit stdenvs;
+            mkDerivationAttrs = {
+              pname = "fs_alloc";
+              inherit version;
+              src = nix-filter {
+                root = ./.;
+                include = [
+                  "fs_alloc.h"
+                  "Makefile"
+                ];
+              };
+              buildPhase = ''
+                make fs_alloc.o
+              '';
+              installPhase = ''
+                mkdir -p $out/include
+                cp fs_alloc.h $out/include
+                mkdir -p $out/lib
+                cp fs_alloc.o $out/lib
+              '';
+              meta = {
+                license = lib.licenses.gpl3Plus;
+              };
             };
           };
 
-          ll_alloc = pkgs.stdenv.mkDerivation {
-            pname = "ll_alloc";
-            inherit version;
-            src = nix-filter {
-              root = ./.;
-              include = [
-                "ll_alloc.h"
-                "fs_alloc.h"
-                "Makefile"
-              ];
-            };
-            buildPhase = ''
-              make ll_alloc.o
-            '';
-            installPhase = ''
-              mkdir -p $out/include
-              cp ll_alloc.h $out/include
-              mkdir -p $out/lib
-              cp ll_alloc.o $out/lib
-            '';
-            meta = {
-              license = lib.licenses.gpl3Plus;
-            };
-          };
-
-          example = pkgs.stdenv.mkDerivation {
-            pname = "example";
-            inherit version;
-            src = nix-filter {
-              root = ./.;
-              include = [
-                "ll_alloc.h"
-                "fs_alloc.h"
-                "example.c"
-                "Makefile"
-              ];
-            };
-            buildPhase = ''
-              make example
-            '';
-            installPhase = ''
-              mkdir -p $out/bin
-              cp example $out/bin
-            '';
-            meta = {
-              license = lib.licenses.gpl3Plus;
+          ll_alloc = {
+            inherit stdenvs;
+            mkDerivationAttrs = {
+              pname = "ll_alloc";
+              inherit version;
+              src = nix-filter {
+                root = ./.;
+                include = [
+                  "ll_alloc.h"
+                  "fs_alloc.h"
+                  "Makefile"
+                ];
+              };
+              buildPhase = ''
+                make ll_alloc.o
+              '';
+              installPhase = ''
+                mkdir -p $out/include
+                cp ll_alloc.h $out/include
+                mkdir -p $out/lib
+                cp ll_alloc.o $out/lib
+              '';
+              meta = {
+                license = lib.licenses.gpl3Plus;
+              };
             };
           };
 
-          default = self'.packages.example;
+          example = {
+            inherit stdenvs;
+            mkDerivationAttrs = {
+              pname = "example";
+              inherit version;
+              src = nix-filter {
+                root = ./.;
+                include = [
+                  "ll_alloc.h"
+                  "fs_alloc.h"
+                  "example.c"
+                  "Makefile"
+                ];
+              };
+              buildPhase = ''
+                make example
+              '';
+              installPhase = ''
+                mkdir -p $out/bin
+                cp example $out/bin
+              '';
+              meta = {
+                license = lib.licenses.gpl3Plus;
+              };
+            };
+          };
         };
 
         apps = {

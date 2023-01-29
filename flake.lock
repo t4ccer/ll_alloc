@@ -72,6 +72,18 @@
         "type": "github"
       }
     },
+    "hello": {
+      "flake": false,
+      "locked": {
+        "narHash": "sha256-1kJjhtlsAkpNB7f6tZEs+dbKd8z7KoNHyDHEJ0tmhnc=",
+        "type": "tarball",
+        "url": "https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://ftp.gnu.org/gnu/hello/hello-2.12.1.tar.gz"
+      }
+    },
     "nix-filter": {
       "locked": {
         "lastModified": 1666547822,
@@ -134,7 +146,35 @@
         "flake-parts": "flake-parts",
         "nix-filter": "nix-filter",
         "nixpkgs": "nixpkgs",
-        "pre-commit-hooks-nix": "pre-commit-hooks-nix"
+        "pre-commit-hooks-nix": "pre-commit-hooks-nix",
+        "t4-nix": "t4-nix"
+      }
+    },
+    "t4-nix": {
+      "inputs": {
+        "flake-parts": [
+          "flake-parts"
+        ],
+        "hello": "hello",
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "pre-commit-hooks-nix": [
+          "pre-commit-hooks-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1675027940,
+        "narHash": "sha256-g7Dmb/+AHJgxBO5sbelUUnfZ/O7OKja2BCkrFvJJ3SA=",
+        "owner": "t4ccer",
+        "repo": "t4.nix",
+        "rev": "d2cd812ea31168d5aee9d6df872b2f8f82176c0c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "t4ccer",
+        "repo": "t4.nix",
+        "type": "github"
       }
     }
   },
