@@ -5,17 +5,17 @@
 #include <string.h>
 
 int main () {
-  printf("Heap size: %lu\n", sizeof(heap));
-  printf("Tracker size: %lu\n", sizeof(alloced_chunks));
-  char *str1 = ll_alloc();
-  char *str2 = ll_alloc();
+  printf("Heap size: %lu\n", sizeof(fs_heap));
+  printf("Tracker size: %lu\n", sizeof(fs_alloced_chunks));
+  char *str1 = fs_alloc();
+  char *str2 = fs_alloc();
 
   strncpy(str1, "Hello", CHUNK_SIZE - 1);
   strncpy(str2, "World!\n", CHUNK_SIZE - 1);
 
   printf("%s %s", str1, str2);
 
-  ll_free(str1);
-  ll_free(str2);
+  fs_free(str1);
+  fs_free(str2);
   return 0;
 }
