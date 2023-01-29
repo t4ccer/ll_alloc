@@ -9,6 +9,9 @@ ll_alloc.o: ll_alloc.h
 example: ll_alloc.o fs_alloc.o example.c
 	$(CC) -Wall -Wextra example.c -o example
 
+test: example
+	./example
+
 clean:
 	rm -f *.o example
 

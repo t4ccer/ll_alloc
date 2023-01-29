@@ -10,6 +10,8 @@ int main() {
   char *str2 = ll_alloc(32);
   char *str3 = ll_alloc(64);
   ll_debug();
+  memcpy(str2, "Hello, World!", 14);
+  printf("%s\n", str2);
 
   printf("----------------------------------------------------------------\n");
 
