@@ -9,6 +9,7 @@ void fs_debug();
 #endif
 
 #ifdef FS_ALLOC_IMPLEMENTATION
+#include <assert.h>
 #include <stddef.h>
 
 #ifndef FS_CHUNK_SIZE
@@ -20,9 +21,12 @@ void fs_debug();
 #endif
 
 unsigned char fs_heap[FS_CHUNK_SIZE * FS_MAX_CHUNKS] = {0};
-unsigned char fs_alloced_chunks[(FS_MAX_CHUNKS + (sizeof(size_t) * 8) - 1) /
-                                (sizeof(size_t) * 8)] = {0};
+size_t fs_alloced_chunks[(FS_MAX_CHUNKS + (sizeof(size_t) * 8) - 1) /
+                         (sizeof(size_t) * 8)] = {0};
 size_t fs_alloced_chunks_count = 0;
+
+static_assert(sizeof(fs_alloced_chunks) * 8 >= FS_MAX_CHUNKS,
+              "fs_alloced_chunks is too small");
 
 unsigned char is_allocated(size_t chunk_idx) {
   return fs_alloced_chunks[chunk_idx / (sizeof(size_t) * 8)] &
