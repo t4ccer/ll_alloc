@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <string.h>
 
-#define FS_ALLOC_IMPLEMENTATION
-#include "fs_alloc.h"
+#define LL_ALLOC_DEBUG
+#define LL_ALLOC_IMPLEMENTATION
+#include "ll_alloc.h"
 
 int main() {
-  printf("Heap size: %lu\n", sizeof(fs_heap));
-  printf("Tracker size: %lu\n", sizeof(fs_alloced_chunks));
-  char *str1 = fs_alloc();
-  char *str2 = fs_alloc();
+  char *str1 = ll_alloc(16);
+  char *str2 = ll_alloc(32);
+  char *str3 = ll_alloc(64);
+  ll_debug();
 
-  strncpy(str1, "Hello", CHUNK_SIZE - 1);
-  strncpy(str2, "World!\n", CHUNK_SIZE - 1);
+  printf("----------------------------------------------------------------\n");
 
-  printf("%s %s", str1, str2);
-
-  fs_free(str1);
-  fs_free(str2);
+  ll_free(str2);
+  ll_free(str1);
+  ll_free(str3);
+  ll_debug();
   return 0;
 }

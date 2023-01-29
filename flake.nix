@@ -1,5 +1,5 @@
 {
-  description = "llalloc";
+  description = "ll_alloc";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -37,7 +37,10 @@
         pkgs,
         system,
         ...
-      }: {
+      }: let
+        inherit (pkgs) lib;
+        version = "1.0.0";
+      in {
         pre-commit.settings = {
           hooks = {
             alejandra.enable = true;
@@ -58,7 +61,7 @@
         packages = {
           fs_alloc = pkgs.stdenv.mkDerivation {
             pname = "fs_alloc";
-            version = "0.0.0";
+            inherit version;
             src = nix-filter {
               root = ./.;
               include = [
@@ -75,20 +78,50 @@
               mkdir -p $out/lib
               cp fs_alloc.o $out/lib
             '';
+            meta = {
+              license = lib.licenses.gpl3Plus;
+            };
+          };
+
+          ll_alloc = pkgs.stdenv.mkDerivation {
+            pname = "ll_alloc";
+            inherit version;
+            src = nix-filter {
+              root = ./.;
+              include = [
+                "ll_alloc.h"
+                "fs_alloc.h"
+                "Makefile"
+              ];
+            };
+            buildPhase = ''
+              make ll_alloc.o
+            '';
+            installPhase = ''
+              mkdir -p $out/include
+              cp ll_alloc.h $out/include
+              mkdir -p $out/lib
+              cp ll_alloc.o $out/lib
+            '';
+            meta = {
+              license = lib.licenses.gpl3Plus;
+            };
           };
 
           example = pkgs.stdenv.mkDerivation {
             pname = "example";
-            version = "0.0.0";
+            inherit version;
             src = nix-filter {
               root = ./.;
               include = [
+                "ll_alloc.h"
+                "fs_alloc.h"
                 "example.c"
                 "Makefile"
               ];
             };
             buildInputs = [
-              self'.packages.fs_alloc
+              self'.packages.ll_alloc
             ];
             buildPhase = ''
               make example
@@ -97,13 +130,18 @@
               mkdir -p $out/bin
               cp example $out/bin
             '';
+            meta = {
+              license = lib.licenses.gpl3Plus;
+            };
           };
+
+          default = self'.packages.example;
         };
 
         apps = {
           example = {
             type = "app";
-            program = "${self'.defaultPackage}/bin/example";
+            program = "${self'.packages.example}/bin/example";
           };
         };
 
