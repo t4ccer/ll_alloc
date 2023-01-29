@@ -1,10 +1,10 @@
-#define FS_ALLOC_IMPLEMENTATION
-#include "fs_alloc.h"
-
 #include <stdio.h>
 #include <string.h>
 
-int main () {
+#define FS_ALLOC_IMPLEMENTATION
+#include "fs_alloc.h"
+
+int main() {
   printf("Heap size: %lu\n", sizeof(fs_heap));
   printf("Tracker size: %lu\n", sizeof(fs_alloced_chunks));
   char *str1 = fs_alloc();

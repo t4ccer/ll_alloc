@@ -51,6 +51,7 @@
             pkgs.gcc
             pkgs.binutils
             pkgs.gdb
+            pkgs.clang # for for clang-format
           ];
         };
 

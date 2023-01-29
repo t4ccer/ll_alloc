@@ -6,3 +6,6 @@ example: example.c
 
 clean:
 	rm -f *.o example
+
+format:
+	clang-format -i --style=LLVM *.c *.h
