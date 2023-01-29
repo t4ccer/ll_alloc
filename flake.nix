@@ -120,9 +120,6 @@
                 "Makefile"
               ];
             };
-            buildInputs = [
-              self'.packages.ll_alloc
-            ];
             buildPhase = ''
               make example
             '';
